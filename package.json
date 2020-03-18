@@ -1,0 +1,23 @@
+{
+  "name": "kaitai",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/mirakui/kaitai",
+  "author": "Issei Naruta",
+  "license": "MIT",
+  "dependencies": {
+    "@slack/webhook": "^5.0.3",
+    "puppeteer": "^2.1.1",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3"
+  },
+  "devDependencies": {
+    "@types/puppeteer": "^2.0.1",
+    "@typescript-eslint/eslint-plugin": "^2.24.0",
+    "@typescript-eslint/parser": "^2.24.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "prettier": "^1.19.1"
+  }
+}
