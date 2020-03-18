@@ -15,26 +15,6 @@ function getEnv(name: string) {
 
 const slackWebhook = new IncomingWebhook(getEnv("SLACK_WEBHOOK_URL"));
 
-// async function addFirstBookOfSeriesToBuscket(
-//   page: puppeteer.Page,
-//   series: Series
-// ) {
-//   const url =
-//     "https://book.dmm.co.jp/series/?floor=Abook&series_id=" + series["id"];
-//   console.log("Fetching " + series["name"] + " " + url);
-//   await page.goto(url);
-
-//   const btnText = await page.$eval(
-//     "div.m-boxListBookProductBlock__btn__itemBasket",
-//     e => (<HTMLElement>e).innerText
-//   );
-//   if (btnText.toString() == "バスケットに入れる") {
-//     console.log("  -> Adding to cart");
-//     slackWebhook.send({ text: "Adding to cart: " + series["name"] });
-//     await page.click("div.m-boxListBookProductBlock__btn__itemBasket a");
-//   }
-// }
-
 async function fetchPages(page: puppeteer.Page) {
   await page.goto("https://www.yodobashi.com/product/100000001005138030/");
   const cartText = await page.$eval(
@@ -42,9 +22,10 @@ async function fetchPages(page: puppeteer.Page) {
     e => (<HTMLElement>e).innerText
   );
   console.debug("cartText:", cartText);
+  slackWebhook.send({ text: cartText });
 }
 
-(async () => {
+async function main() {
   console.log("Start");
 
   const browser = await (async () => {
@@ -63,25 +44,43 @@ async function fetchPages(page: puppeteer.Page) {
   try {
     const page = await browser.newPage();
 
-    //await fetchPages(page);
-
-    fetch("https://www.yodobashi.com/product/100000001005138030/", {
-      headers: {
-        accept:
-          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-        "accept-language": "en,ja;q=0.9",
-        "user-agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/82.0.4076.0 Safari/537.36"
-      },
-      referrerPolicy: "no-referrer-when-downgrade",
-      body: null,
-      method: "GET",
-      mode: "cors"
+    await page.setRequestInterception(true);
+    page.on("request", request => {
+      if (!request.isNavigationRequest()) {
+        request.continue();
+        return;
+      }
+      let headers = request.headers();
+      headers["connection"] = "keep-alive";
+      headers["user-agent"] =
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/82.0.4076.0 Safari/537.36";
+      headers["accept-language"] = "en,ja;q=0.9";
+      headers["accept"] =
+        "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
+      console.debug("headers", headers);
+      request.continue({ headers });
     });
+
+    await fetchPages(page);
+
     console.log("Finished");
+
+    return { message: "ok" };
   } finally {
     if (browser.close) {
       await browser.close();
     }
   }
-})();
+}
+
+exports.transfer = async (event: any) => {
+  const dispatchPromises = event.Records.map((record: any) => {
+    const payloadString = new Buffer(record.kinesis.data, "base64").toString(
+      "utf-8"
+    );
+    const payload = JSON.parse(payloadString);
+    console.log(payload);
+    return main();
+  });
+  return Promise.all(dispatchPromises);
+};
