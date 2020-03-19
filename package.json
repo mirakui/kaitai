@@ -9,12 +9,14 @@
     "@slack/webhook": "^5.0.3",
     "aws-sdk": "^2.642.0",
     "puppeteer": "^2.1.1",
+    "request": "^2.88.2",
     "ts-node": "^8.6.2",
     "typescript": "^3.8.3"
   },
   "devDependencies": {
     "@types/aws-sdk": "^2.7.0",
     "@types/puppeteer": "^2.0.1",
+    "@types/request": "^2.48.4",
     "@typescript-eslint/eslint-plugin": "^2.24.0",
     "@typescript-eslint/parser": "^2.24.0",
     "eslint": "^6.8.0",

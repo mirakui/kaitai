@@ -1,40 +1,7 @@
 import fs from "fs";
 import puppeteer from "puppeteer";
 import S3 from "aws-sdk/clients/s3";
-
-type KaitaiConfig = {
-  products: {
-    name: string;
-    sites: {
-      name: string;
-      url: string;
-      query: string;
-    }[];
-  }[];
-};
-
-type KaitaiSiteStatuses = {
-  products: {
-    name: string;
-    sites: {
-      name: string;
-      url: string;
-      status: string;
-    }[];
-  }[];
-};
-
-function getEnv(name: string) {
-  let env = process.env;
-  if ("SECRETS" in process.env) {
-    env = JSON.parse(<string>process.env["SECRETS"]);
-  }
-  const val = env[name];
-  if (val == undefined) {
-    throw new Error('Environment variable "' + name + '" required');
-  }
-  return val;
-}
+import { KaitaiSiteStatuses, KaitaiConfig } from "./lib/types";
 
 function loadConfig(path: string): KaitaiConfig {
   const file = fs.readFileSync(path);
@@ -122,7 +89,9 @@ async function putStatus(status: object) {
   const params = {
     Body: body,
     Bucket: "static.mirakui.com",
-    Key: "kaitai/status.json"
+    Key: "kaitai/status.json",
+    ContentType: "text/json",
+    ACL: "public-read"
   };
   s3.putObject(params, (err, data) => {
     console.debug("err:", err, "data:", data);
