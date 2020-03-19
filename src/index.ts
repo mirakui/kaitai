@@ -16,9 +16,11 @@ function getEnv(name: string) {
 const slackWebhook = new IncomingWebhook(getEnv("SLACK_WEBHOOK_URL"));
 
 async function fetchPages(page: puppeteer.Page) {
-  await page.goto("https://www.yodobashi.com/product/100000001005138030/");
+  //await page.goto("https://www.yodobashi.com/product/100000001005138030/");
+  await page.goto("https://cookpad.com/");
   const cartText = await page.$eval(
-    "div.buyBox",
+    //"div.buyBox",
+    ".service_index",
     e => (<HTMLElement>e).innerText
   );
   console.debug("cartText:", cartText);
@@ -57,15 +59,12 @@ async function main() {
       headers["accept-language"] = "en,ja;q=0.9";
       headers["accept"] =
         "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
-      console.debug("headers", headers);
       request.continue({ headers });
     });
 
     await fetchPages(page);
 
     console.log("Finished");
-
-    return { message: "ok" };
   } finally {
     if (browser.close) {
       await browser.close();
@@ -73,14 +72,6 @@ async function main() {
   }
 }
 
-exports.transfer = async (event: any) => {
-  const dispatchPromises = event.Records.map((record: any) => {
-    const payloadString = new Buffer(record.kinesis.data, "base64").toString(
-      "utf-8"
-    );
-    const payload = JSON.parse(payloadString);
-    console.log(payload);
-    return main();
-  });
-  return Promise.all(dispatchPromises);
-};
+(async () => {
+  await main();
+})();
