@@ -87,10 +87,12 @@ async function main() {
 async function putStatus(status: object) {
   const s3 = new S3();
   const body = JSON.stringify(status);
+  const bucket = KaitaiUtil.getEnvRequired("AFTER_STATUS_BUCKET");
+  const key = KaitaiUtil.getEnvRequired("AFTER_STATUS_KEY");
   const params = {
     Body: body,
-    Bucket: KaitaiUtil.getEnvRequired("AFTER_STATUS_BUCKET"),
-    Key: KaitaiUtil.getEnvRequired("AFTER_STATUS_KEY"),
+    Bucket: bucket,
+    Key: key,
     ContentType: "text/json",
     ACL: "public-read"
   };
