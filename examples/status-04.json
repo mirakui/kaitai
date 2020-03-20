@@ -1,0 +1,34 @@
+{
+  "products": [
+    {
+      "name": "リングフィットアドベンチャー",
+      "sites": [
+        {
+          "name": "yodobashi",
+          "url": "https://www.yodobashi.com/product/100000001005138030/",
+          "status": "予定数の販売を終了しました\n\nお気に入りに登録する"
+        },
+        {
+          "name": "testショップ",
+          "url": "https://example.com/",
+          "status": "販売中"
+        }
+      ]
+    },
+    {
+      "name": "トイレットペーパー",
+      "sites": [
+        {
+          "name": "test薬局",
+          "url": "https://example.com/",
+          "status": "入荷未定"
+        },
+        {
+          "name": "testショップ",
+          "url": "https://example.com/",
+          "status": "販売中"
+        }
+      ]
+    }
+  ]
+}
