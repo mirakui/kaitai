@@ -18,4 +18,4 @@ RUN yarn
 COPY . .
 RUN yarn build
 
-CMD ["node", "build/index.js"]
+CMD ["node", "build/notifier.js"]
