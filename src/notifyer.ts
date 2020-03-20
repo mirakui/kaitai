@@ -84,7 +84,19 @@ function compareStatuses(
   for (let product of after.products) {
     for (let site of product.sites) {
       const afterStatus = site.status;
-      const beforeStatus = befores[product.name][site.name].status;
+      const beforeProduct = befores[product.name];
+      if (!beforeProduct) {
+        console.warn(`product[${product.name}] doesn't exist in beforeStatus`);
+        continue;
+      }
+      const beforeSite = beforeProduct[site.name];
+      let beforeStatus;
+      if (beforeSite) {
+        beforeStatus = beforeSite.status;
+      } else {
+        console.warn(`site[${site.name}] doesn't exist in beforeStatus`);
+        beforeStatus = "(no data)";
+      }
       if (beforeStatus != afterStatus || KaitaiUtil.getEnv("FORCE_NOTIFY")) {
         const diff: KaitaiDiff = {
           productName: product.name,
