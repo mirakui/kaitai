@@ -1,8 +1,9 @@
-class Util {
-  static getEnv(name: string) {
+class KaitaiUtil {
+  static getEnvRequired(name: string) {
     let env = process.env;
     if ("SECRETS" in process.env) {
-      env = JSON.parse(<string>process.env["SECRETS"]);
+      const secrets = JSON.parse(<string>process.env["SECRETS"]);
+      env = { env, ...secrets };
     }
     const val = env[name];
     if (val == undefined) {
@@ -10,6 +11,15 @@ class Util {
     }
     return val;
   }
+  static getEnv(name: string) {
+    let env = process.env;
+    if ("SECRETS" in process.env) {
+      const secrets = JSON.parse(<string>process.env["SECRETS"]);
+      env = { env, ...secrets };
+    }
+    const val = env[name];
+    return val;
+  }
 }
 
-export { Util };
+export { KaitaiUtil };

@@ -1,15 +1,13 @@
 import S3 from "aws-sdk/clients/s3";
 import request from "request";
 import { IncomingWebhook } from "@slack/webhook";
-import {
-  KaitaiDiff,
-  KaitaiSite,
-  KaitaiProduct,
-  KaitaiSiteStatuses
-} from "./lib/types";
-import { Util } from "./lib/util";
+import { KaitaiDiff, KaitaiSite, KaitaiSiteStatuses } from "./lib/types";
+import { KaitaiUtil } from "./lib/util";
+import util from "util";
 
-const slackWebhook = new IncomingWebhook(Util.getEnv("SLACK_WEBHOOK_URL"));
+const slackWebhook = new IncomingWebhook(
+  KaitaiUtil.getEnvRequired("SLACK_WEBHOOK_URL")
+);
 
 async function getStatusFromS3(
   bucket: string,
@@ -31,7 +29,6 @@ async function getStatusFromS3(
         }
       }
       if (data.Body) {
-        console.debug(data.Body.toString());
         const json = JSON.parse(data.Body.toString());
         resolve(<KaitaiSiteStatuses>json);
       } else {
@@ -65,7 +62,7 @@ async function putStatusToS3(
     Key: key
   };
   s3.putObject(params, (err, data) => {
-    console.debug("err:", err, "data:", data);
+    console.debug(`s3 put: ${bucket}/${key}`, "err:", err, "data:", data);
   });
 }
 
@@ -88,8 +85,7 @@ function compareStatuses(
     for (let site of product.sites) {
       const afterStatus = site.status;
       const beforeStatus = befores[product.name][site.name].status;
-      //if (beforeStatus != afterStatus) {
-      if (true) {
+      if (beforeStatus != afterStatus || KaitaiUtil.getEnv("FORCE_NOTIFY")) {
         const diff: KaitaiDiff = {
           productName: product.name,
           siteName: site.name,
@@ -118,29 +114,38 @@ async function main() {
   const beforeBucket = "naruta-test";
   const beforeKey = "kaitai/status.json";
   const afterUrl = "http://static.mirakui.com/kaitai/status.json";
-  console.debug("start");
+  console.log("start");
   let beforeStatus = await getStatusFromS3(beforeBucket, beforeKey).catch(
     err => {
-      console.log("no such key in the Before bucket");
+      console.warn("no such key in the Before bucket");
     }
   );
   const afterStatus = await getStatusFromUrl(afterUrl);
   let diffs: KaitaiDiff[];
 
-  console.debug(beforeStatus);
-  console.debug(afterStatus);
-  console.debug("hello");
-
-  putStatusToS3(beforeBucket, beforeKey, afterStatus);
+  console.debug("before:", util.inspect(beforeStatus, true, null));
+  console.debug("after:", util.inspect(afterStatus, true, null));
 
   if (beforeStatus) {
     diffs = compareStatuses(beforeStatus, afterStatus);
-    console.debug(diffs);
+    console.log("diffs:", util.inspect(diffs, true, null));
+
+    if (diffs.length > 0 && !KaitaiUtil.getEnv("DISABLE_UPDATE")) {
+      putStatusToS3(beforeBucket, beforeKey, afterStatus);
+    }
+
     for (let diff of diffs) {
       const diffString = formatDiff(diff);
-      slackWebhook.send({ text: diffString });
+      console.log("slack:", diffString);
+      slackWebhook.send({
+        text: diffString,
+        channel: KaitaiUtil.getEnv("SLACK_CHANNEL"),
+        icon_emoji: KaitaiUtil.getEnv("SLACK_ICON_EMOJI"),
+        username: KaitaiUtil.getEnv("SLACK_USER_NAME")
+      });
     }
   }
+  console.log("finished");
 }
 
 (async () => {
