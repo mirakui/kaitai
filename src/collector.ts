@@ -2,6 +2,7 @@ import fs from "fs";
 import puppeteer from "puppeteer";
 import S3 from "aws-sdk/clients/s3";
 import { KaitaiSiteStatuses, KaitaiConfig } from "./lib/types";
+import { KaitaiUtil } from "./lib/util";
 
 function loadConfig(path: string): KaitaiConfig {
   const file = fs.readFileSync(path);
@@ -88,13 +89,13 @@ async function putStatus(status: object) {
   const body = JSON.stringify(status);
   const params = {
     Body: body,
-    Bucket: "static.mirakui.com",
-    Key: "kaitai/status.json",
+    Bucket: KaitaiUtil.getEnvRequired("AFTER_STATUS_BUCKET"),
+    Key: KaitaiUtil.getEnvRequired("AFTER_STATUS_KEY"),
     ContentType: "text/json",
     ACL: "public-read"
   };
   s3.putObject(params, (err, data) => {
-    console.debug("err:", err, "data:", data);
+    console.debug(`s3 put: ${bucket}/${key}`, "err:", err, "data:", data);
   });
 }
 

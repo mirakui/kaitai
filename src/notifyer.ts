@@ -123,10 +123,10 @@ function formatDiff(diff: KaitaiDiff): string {
 }
 
 async function main() {
-  const beforeBucket = "naruta-test";
-  const beforeKey = "kaitai/status.json";
-  const afterUrl = "http://static.mirakui.com/kaitai/status.json";
-  console.log("start");
+  const beforeBucket = KaitaiUtil.getEnvRequired("BEFORE_STATUS_BUCKET");
+  const beforeKey = KaitaiUtil.getEnvRequired("BEFORE_STATUS_KEY");
+  const afterUrl = KaitaiUtil.getEnvRequired("AFTER_STATUS_URL");
+  console.log("Start");
   let beforeStatus = await getStatusFromS3(beforeBucket, beforeKey).catch(
     err => {
       console.warn("no such key in the Before bucket");
@@ -157,7 +157,7 @@ async function main() {
       });
     }
   }
-  console.log("finished");
+  console.log("Finished");
 }
 
 (async () => {
