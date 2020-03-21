@@ -6,7 +6,8 @@
         {
           "name": "yodobashi",
           "url": "https://www.yodobashi.com/product/100000001005138030/",
-          "query": "div.buyBox"
+          "query": "div.buyBox",
+          "engine": "request"
         }
       ]
     }

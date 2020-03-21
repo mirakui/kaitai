@@ -5,9 +5,12 @@ type KaitaiConfig = {
       name: string;
       url: string;
       query: string;
+      engine?: KaitaiFetcherEngineName;
     }[];
   }[];
 };
+
+type KaitaiFetcherEngineName = "request" | "puppeteer";
 
 type KaitaiSiteStatuses = {
   products: KaitaiProduct[];
@@ -37,5 +40,6 @@ export {
   KaitaiSite,
   KaitaiProduct,
   KaitaiConfig,
-  KaitaiSiteStatuses
+  KaitaiSiteStatuses,
+  KaitaiFetcherEngineName
 };
