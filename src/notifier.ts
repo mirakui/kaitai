@@ -160,6 +160,15 @@ async function main() {
   console.log("Finished");
 }
 
-(async () => {
+// (async () => {
+//   await main();
+// })();
+
+exports.handler = async (event: any) => {
   await main();
-})();
+  const response = {
+    statusCode: 200,
+    body: JSON.stringify("OK")
+  };
+  return response;
+};
