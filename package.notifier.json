@@ -1,0 +1,11 @@
+{
+  "name": "notifier",
+  "version": "1.0.0",
+  "main": "notifier.js",
+  "license": "MIT",
+  "dependencies": {
+    "@slack/webhook": "^5.0.3",
+    "aws-sdk": "^2.647.0",
+    "request": "^2.88.2"
+  }
+}

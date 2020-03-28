@@ -6,11 +6,20 @@ type KaitaiConfig = {
       url: string;
       query: string;
       engine?: KaitaiFetcherEngineName;
+      encoding?: string;
     }[];
   }[];
 };
 
 type KaitaiFetcherEngineName = "request" | "puppeteer";
+
+type KaitaiSiteStatusesDictionary = {
+  products: { [key: string]: KaitaiProductDictionary };
+};
+
+type KaitaiProductDictionary = {
+  sites: { [key: string]: KaitaiSite };
+};
 
 type KaitaiSiteStatuses = {
   products: KaitaiProduct[];
@@ -41,5 +50,7 @@ export {
   KaitaiProduct,
   KaitaiConfig,
   KaitaiSiteStatuses,
-  KaitaiFetcherEngineName
+  KaitaiFetcherEngineName,
+  KaitaiProductDictionary,
+  KaitaiSiteStatusesDictionary
 };

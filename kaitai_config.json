@@ -8,6 +8,13 @@
           "url": "https://www.yodobashi.com/product/100000001005138030/",
           "query": "div.buyBox",
           "engine": "request"
+        },
+        {
+          "name": "biccamera",
+          "url": "https://www.biccamera.com/bc/item/7210831/",
+          "query": "td.bcs_stock",
+          "engine": "request",
+          "encoding": "Shift_JIS"
         }
       ]
     }
