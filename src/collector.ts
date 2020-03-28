@@ -73,7 +73,7 @@ async function main() {
   console.log("Start");
 
   const config = loadConfig("kaitai_config.json");
-  console.debug(config);
+  console.debug("Loaded config:", util.inspect(config, true, null));
 
   const lastStatus = siteStatusesToDictionary(await getStatus());
 
@@ -86,15 +86,17 @@ async function main() {
     for (let product of config.products) {
       let siteStatuses: KaitaiSite[] = [];
       for (let site of product.sites) {
+        console.log(`Fetching ${site.url} (${site.engine})`);
         await fetcher
           .fetchArea(site.url, site.query, site.engine, site.encoding)
-          .then(areaTextOrig => {
-            let areaText = areaTextOrig;
-            siteStatuses.push(<KaitaiSite>{
+          .then(areaText => {
+            const siteStatus: KaitaiSite = {
               name: site.name,
               url: site.url,
               status: areaText
-            });
+            };
+            console.debug("Site status:", util.inspect(siteStatus, true, null));
+            siteStatuses.push(siteStatus);
           })
           .catch(err => {
             console.warn("Error occurred on fetching", site.name, err);
@@ -112,7 +114,7 @@ async function main() {
       status.products.push({ name: product.name, sites: siteStatuses });
     }
 
-    console.debug("status:", util.inspect(status, true, null));
+    console.debug("All statuses:", util.inspect(status, true, null));
 
     if (!KaitaiUtil.getEnv("DISABLE_UPDATE")) {
       putStatus(status);
