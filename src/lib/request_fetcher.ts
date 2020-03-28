@@ -12,7 +12,11 @@ export class RequestFetcher implements FetcherEngine {
 
   private static execQuery(body: string, query: string) {
     const $ = cheerio.load(body);
-    return $(query).text();
+    const nodes = $(query);
+    if (nodes.length == 0) {
+      throw new Error(`No matches: ${query}`);
+    }
+    return nodes.text().trim();
   }
 
   async fetchArea(
@@ -27,58 +31,30 @@ export class RequestFetcher implements FetcherEngine {
     };
     return new Promise((resolve, reject) => {
       let body = "";
-      let contentLength = 0;
-      const req = request(options, (error, response, rawBody) => {
-        console.debug("callback");
-      });
-      if (encoding) {
-        req.pipe(iconv.decodeStream(encoding)).pipe(iconv.encodeStream("utf8"));
-      }
-      req
+      request(options, (error, response, rawBody) => {
+        if (error) {
+          reject(error);
+          return;
+        } else if (response.statusCode != 200) {
+          reject(new Error(`Status code: ${response.statusCode}`));
+          return;
+        }
+        try {
+          resolve(RequestFetcher.execQuery(body, query));
+        } catch (execQueryError) {
+          reject(execQueryError);
+        }
+      })
         .on("data", chunk => {
-          console.debug("received data:", chunk.length, "total", body.length);
-          body += chunk;
-          if (contentLength > 0 && body.length >= contentLength) {
-            resolve(RequestFetcher.execQuery(body, query));
+          if (encoding) {
+            body += iconv.decode(Buffer.from(chunk), encoding);
+          } else {
+            body += chunk;
           }
         })
         .on("error", error => {
           reject(error);
-        })
-        .on("end", () => {
-          console.debug("end");
-          resolve(RequestFetcher.execQuery(body, query));
-        })
-        .on("response", response => {
-          console.debug("response");
-          console.debug("code:", response.statusCode);
-          if (response.headers["content-length"]) {
-            contentLength = Number.parseInt(response.headers["content-length"]);
-          }
-          console.debug("content-length:", contentLength);
-        })
-        .on("close", () => {
-          console.debug("close");
-        })
-        .on("complete", () => {
-          console.debug("complete");
         });
-
-      // request(options, (error, response, _body) => {
-      //   let body = _body;
-      //   if (encoding) {
-      //     //body = iconv.decode(Buffer.from(body), encoding);
-      //     body = iconv.decode(_body, "Shift_JIS");
-      //   }
-      //   if (error) {
-      //     reject(error);
-      //   } else if (response.statusCode != 200) {
-      //     reject(response);
-      //   } else {
-      //     const $ = cheerio.load(body);
-      //     resolve($(query).text());
-      //   }
-      // });
     });
   }
 
