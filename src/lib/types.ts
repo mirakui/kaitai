@@ -1,4 +1,6 @@
-type KaitaiConfig = {
+import request from "request";
+
+export type KaitaiConfig = {
   products: {
     name: string;
     sites: {
@@ -7,36 +9,37 @@ type KaitaiConfig = {
       query: string;
       engine?: KaitaiFetcherEngineName;
       encoding?: string;
+      headers?: request.Headers;
     }[];
   }[];
 };
 
-type KaitaiFetcherEngineName = "request" | "puppeteer";
+export type KaitaiFetcherEngineName = "request" | "puppeteer";
 
-type KaitaiSiteStatusesDictionary = {
+export type KaitaiSiteStatusesDictionary = {
   products: { [key: string]: KaitaiProductDictionary };
 };
 
-type KaitaiProductDictionary = {
+export type KaitaiProductDictionary = {
   sites: { [key: string]: KaitaiSite };
 };
 
-type KaitaiSiteStatuses = {
+export type KaitaiSiteStatuses = {
   products: KaitaiProduct[];
 };
 
-type KaitaiProduct = {
+export type KaitaiProduct = {
   name: string;
   sites: KaitaiSite[];
 };
 
-type KaitaiSite = {
+export type KaitaiSite = {
   name: string;
   url: string;
   status: string;
 };
 
-type KaitaiDiff = {
+export type KaitaiDiff = {
   productName: string;
   siteName: string;
   url: string;
@@ -44,13 +47,8 @@ type KaitaiDiff = {
   afterStatus: string;
 };
 
-export {
-  KaitaiDiff,
-  KaitaiSite,
-  KaitaiProduct,
-  KaitaiConfig,
-  KaitaiSiteStatuses,
-  KaitaiFetcherEngineName,
-  KaitaiProductDictionary,
-  KaitaiSiteStatusesDictionary
+export type KaitaiFetcherOptions = {
+  engine?: KaitaiFetcherEngineName;
+  encoding?: string;
+  headers?: request.Headers;
 };

@@ -1,7 +1,8 @@
 import request from "request";
 import cheerio from "cheerio";
 import iconv from "iconv-lite";
-import { requestHeaders, FetcherEngine } from "./fetcher_common";
+import { defaultRequestHeaders, FetcherEngine } from "./fetcher_common";
+import { KaitaiFetcherOptions } from "./types";
 
 export class RequestFetcher implements FetcherEngine {
   constructor() {}
@@ -22,17 +23,17 @@ export class RequestFetcher implements FetcherEngine {
   async fetchArea(
     url: string,
     query: string,
-    encoding?: string
+    options?: KaitaiFetcherOptions
   ): Promise<string> {
-    const options = {
+    const requestOptions = {
       url: url,
-      headers: requestHeaders,
+      headers: options?.headers || defaultRequestHeaders,
       encoding: null,
       followRedirect: false
     };
     return new Promise((resolve, reject) => {
       let body = "";
-      request(options, (error, response, rawBody) => {
+      request(requestOptions, (error, response, rawBody) => {
         if (error) {
           reject(error);
           return;
@@ -47,8 +48,8 @@ export class RequestFetcher implements FetcherEngine {
         }
       })
         .on("data", chunk => {
-          if (encoding) {
-            body += iconv.decode(Buffer.from(chunk), encoding);
+          if (options?.encoding) {
+            body += iconv.decode(Buffer.from(chunk), options?.encoding);
           } else {
             body += chunk;
           }

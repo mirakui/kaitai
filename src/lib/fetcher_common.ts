@@ -1,4 +1,6 @@
-export const requestHeaders: { [key: string]: string } = {
+import { KaitaiFetcherOptions } from "./types";
+
+export const defaultRequestHeaders: { [key: string]: string } = {
   Connection: "keep-alive",
   Pragma: "no-cache",
   "Cache-Control": "no-cache",
@@ -16,6 +18,10 @@ export const requestHeaders: { [key: string]: string } = {
 
 export interface FetcherEngine {
   // static async create(): FetcherEngine;
-  fetchArea(url: string, query: string, encoding?: string): Promise<string>;
+  fetchArea(
+    url: string,
+    query: string,
+    options?: KaitaiFetcherOptions
+  ): Promise<string>;
   close(): void;
 }

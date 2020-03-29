@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer";
-import { requestHeaders, FetcherEngine } from "./fetcher_common";
+import { defaultRequestHeaders, FetcherEngine } from "./fetcher_common";
+import { KaitaiFetcherOptions } from "./types";
 
 export class PuppeteerFetcher implements FetcherEngine {
   page: puppeteer.Page;
@@ -34,7 +35,7 @@ export class PuppeteerFetcher implements FetcherEngine {
         return;
       }
       let headers = request.headers();
-      headers = requestHeaders;
+      headers = defaultRequestHeaders;
       request.continue({ headers });
     });
 
@@ -50,7 +51,7 @@ export class PuppeteerFetcher implements FetcherEngine {
   async fetchArea(
     url: string,
     query: string,
-    encoding?: string
+    options?: KaitaiFetcherOptions
   ): Promise<string> {
     await this.page.goto(url);
     return new Promise((resolve, reject) => {

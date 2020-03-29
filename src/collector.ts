@@ -91,7 +91,11 @@ async function main() {
           new Promise((resolve, reject) => {
             console.log(`Fetching ${site.url} (${site.engine})`);
             fetcher
-              .fetchArea(site.url, site.query, site.engine, site.encoding)
+              .fetchArea(site.url, site.query, {
+                engine: site.engine,
+                encoding: site.encoding,
+                headers: site.headers
+              })
               .then(areaText => {
                 const siteStatus: KaitaiSite = {
                   name: site.name,
