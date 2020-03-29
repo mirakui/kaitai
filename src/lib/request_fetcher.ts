@@ -27,7 +27,8 @@ export class RequestFetcher implements FetcherEngine {
     const options = {
       url: url,
       headers: requestHeaders,
-      encoding: null
+      encoding: null,
+      followRedirect: false
     };
     return new Promise((resolve, reject) => {
       let body = "";
