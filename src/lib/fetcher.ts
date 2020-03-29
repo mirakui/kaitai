@@ -1,8 +1,9 @@
 import { KaitaiUtil } from "./util";
-import { KaitaiFetcherEngineName, KaitaiFetcherOptions } from "./types";
+import { KaitaiFetcherOptions } from "./types";
 import { FetcherEngine } from "./fetcher_common";
 import { PuppeteerFetcher } from "./puppeteer_fetcher";
 import { RequestFetcher } from "./request_fetcher";
+import { ExecFetcher } from "./exec_fetcher";
 
 export class Fetcher {
   fetchers: { [key: string]: FetcherEngine };
@@ -14,6 +15,7 @@ export class Fetcher {
   async setup() {
     this.fetchers["puppeteer"] = await PuppeteerFetcher.create();
     this.fetchers["request"] = await RequestFetcher.create();
+    this.fetchers["exec"] = await ExecFetcher.create();
   }
 
   async fetchArea(

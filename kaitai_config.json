@@ -6,13 +6,9 @@
         {
           "name": "My Nintendo Store",
           "url": "https://store.nintendo.co.jp/item/HAC_R_AL3PA.html",
-          "query": ".item-stock-and-shipping-fee",
-          "engine": "request",
-          "headers": {
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4096.0 Safari/537.36",
-            "Cache-Control": "max-age=0",
-            "Accept-Encoding": "gzip"
-          }
+          "query": ".item-stock-and-shipping-fee__stock",
+          "engine": "exec",
+          "command": "curl -s 'https://store.nintendo.co.jp/item/HAC_R_AL3PA.html' -H 'cache-control: max-age=0' -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4096.0 Safari/537.36' --compressed"
         },
         {
           "name": "yodobashi",

@@ -10,11 +10,12 @@ export type KaitaiConfig = {
       engine?: KaitaiFetcherEngineName;
       encoding?: string;
       headers?: request.Headers;
+      command?: string;
     }[];
   }[];
 };
 
-export type KaitaiFetcherEngineName = "request" | "puppeteer";
+export type KaitaiFetcherEngineName = "request" | "puppeteer" | "exec";
 
 export type KaitaiSiteStatusesDictionary = {
   products: { [key: string]: KaitaiProductDictionary };
@@ -51,4 +52,5 @@ export type KaitaiFetcherOptions = {
   engine?: KaitaiFetcherEngineName;
   encoding?: string;
   headers?: request.Headers;
+  command?: string;
 };

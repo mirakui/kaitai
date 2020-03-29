@@ -94,7 +94,8 @@ async function main() {
               .fetchArea(site.url, site.query, {
                 engine: site.engine,
                 encoding: site.encoding,
-                headers: site.headers
+                headers: site.headers,
+                command: site.command
               })
               .then(areaText => {
                 const siteStatus: KaitaiSite = {
