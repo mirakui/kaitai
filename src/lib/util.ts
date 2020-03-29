@@ -39,9 +39,9 @@ export class KaitaiUtil {
             const interval = intervals[0] * 1000;
             console.warn(`Retrying after ${interval} sec: ${options?.message}`);
             setTimeout(() => {
-              const newOptions = {
-                options,
-                ...{ intervals: intervals.slice(1) }
+              const newOptions: RetryOptions = {
+                ...options,
+                intervals: intervals.slice(1)
               };
               resolve(KaitaiUtil.retry(callback, newOptions));
             }, interval);
