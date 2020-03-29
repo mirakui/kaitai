@@ -1,3 +1,4 @@
+import { KaitaiUtil } from "./util";
 import { KaitaiFetcherEngineName } from "./types";
 import { FetcherEngine } from "./fetcher_common";
 import { PuppeteerFetcher } from "./puppeteer_fetcher";
@@ -22,7 +23,10 @@ export class Fetcher {
     encoding?: string
   ): Promise<string> {
     const engineName = engine?.toString() || "request";
-    return this.fetchers[engineName].fetchArea(url, query, encoding);
+
+    return KaitaiUtil.retry(async () => {
+      return await this.fetchers[engineName].fetchArea(url, query, encoding);
+    });
   }
 
   async close() {

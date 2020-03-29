@@ -70,7 +70,7 @@ function siteStatusesToDictionary(status: KaitaiSiteStatuses) {
 }
 
 async function main() {
-  console.log("Start");
+  console.log(`Start: ${new Date()}`);
 
   const config = loadConfig("kaitai_config.json");
   console.debug("Loaded config:", util.inspect(config, true, null));
@@ -119,10 +119,9 @@ async function main() {
     if (!KaitaiUtil.getEnv("DISABLE_UPDATE")) {
       putStatus(status);
     }
-
-    console.log("Finished");
   } finally {
     fetcher.close();
+    console.log(`Finished: ${new Date()}`);
   }
 }
 
