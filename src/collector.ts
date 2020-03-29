@@ -115,6 +115,13 @@ async function main() {
                     url: lastSite.url,
                     status: lastSite.status
                   });
+                } else {
+                  console.log("Last status not found:", site);
+                  resolve({
+                    name: site.name,
+                    url: site.url,
+                    status: "(no data)"
+                  });
                 }
               });
           })
