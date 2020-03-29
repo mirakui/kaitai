@@ -84,40 +84,51 @@ async function main() {
     let status: KaitaiSiteStatuses = { products: [] };
 
     for (let product of config.products) {
-      let siteStatuses: KaitaiSite[] = [];
+      let fetcherPromises: Promise<KaitaiSite>[] = [];
+
       for (let site of product.sites) {
-        console.log(`Fetching ${site.url} (${site.engine})`);
-        await fetcher
-          .fetchArea(site.url, site.query, site.engine, site.encoding)
-          .then(areaText => {
-            const siteStatus: KaitaiSite = {
-              name: site.name,
-              url: site.url,
-              status: areaText
-            };
-            console.debug("Site status:", util.inspect(siteStatus, true, null));
-            siteStatuses.push(siteStatus);
-          })
-          .catch(err => {
-            console.warn("Error occurred on fetching", site.name, err);
-            const lastSite = lastStatus.products[product.name].sites[site.name];
-            if (lastSite) {
-              console.log("Last status found:", lastSite);
-              siteStatuses.push({
-                name: lastSite.name,
-                url: lastSite.url,
-                status: lastSite.status
+        fetcherPromises.push(
+          new Promise((resolve, reject) => {
+            console.log(`Fetching ${site.url} (${site.engine})`);
+            fetcher
+              .fetchArea(site.url, site.query, site.engine, site.encoding)
+              .then(areaText => {
+                const siteStatus: KaitaiSite = {
+                  name: site.name,
+                  url: site.url,
+                  status: areaText
+                };
+                console.debug(
+                  "Site status:",
+                  util.inspect(siteStatus, true, null)
+                );
+                resolve(siteStatus);
+              })
+              .catch(err => {
+                console.warn("Error occurred on fetching", site.name, err);
+                const lastSite =
+                  lastStatus.products[product.name].sites[site.name];
+                if (lastSite) {
+                  console.log("Last status found:", lastSite);
+                  resolve({
+                    name: lastSite.name,
+                    url: lastSite.url,
+                    status: lastSite.status
+                  });
+                }
               });
-            }
-          });
+          })
+        );
       }
-      status.products.push({ name: product.name, sites: siteStatuses });
-    }
+      Promise.all(fetcherPromises).then(siteStatuses => {
+        status.products.push({ name: product.name, sites: siteStatuses });
 
-    console.debug("All statuses:", util.inspect(status, true, null));
+        console.debug("All statuses:", util.inspect(status, true, null));
 
-    if (!KaitaiUtil.getEnv("DISABLE_UPDATE")) {
-      putStatus(status);
+        if (!KaitaiUtil.getEnv("DISABLE_UPDATE")) {
+          putStatus(status);
+        }
+      });
     }
   } finally {
     fetcher.close();
