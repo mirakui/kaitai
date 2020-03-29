@@ -1,3 +1,7 @@
+type RetryOptions = {
+  intervals?: number[];
+  message?: string;
+};
 export class KaitaiUtil {
   static getEnvRequired(name: string) {
     let env = process.env;
@@ -22,8 +26,9 @@ export class KaitaiUtil {
   }
   static async retry<T>(
     callback: () => Promise<T>,
-    intervals: number[] = [1, 2, 4, 8]
+    options?: RetryOptions
   ): Promise<T> {
+    const intervals = options?.intervals || [1, 2, 4, 8];
     return new Promise((resolve, reject) => {
       callback()
         .then(result => {
@@ -32,9 +37,13 @@ export class KaitaiUtil {
         .catch(error => {
           if (intervals.length > 0) {
             const interval = intervals[0] * 1000;
-            console.warn(`Retrying after ${interval} sec`);
+            console.warn(`Retrying after ${interval} sec: ${options?.message}`);
             setTimeout(() => {
-              resolve(KaitaiUtil.retry(callback, intervals.slice(1)));
+              const newOptions = {
+                options,
+                ...{ intervals: intervals.slice(1) }
+              };
+              resolve(KaitaiUtil.retry(callback, newOptions));
             }, interval);
           } else {
             reject(error);

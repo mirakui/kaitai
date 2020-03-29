@@ -24,9 +24,12 @@ export class Fetcher {
   ): Promise<string> {
     const engineName = engine?.toString() || "request";
 
-    return KaitaiUtil.retry(async () => {
-      return await this.fetchers[engineName].fetchArea(url, query, encoding);
-    });
+    return KaitaiUtil.retry(
+      async () => {
+        return await this.fetchers[engineName].fetchArea(url, query, encoding);
+      },
+      { message: `on fetching ${url}` }
+    );
   }
 
   async close() {
