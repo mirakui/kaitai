@@ -38,6 +38,12 @@
           "url": "https://www.edion.com/detail.html?p_cd=00062252591",
           "query": ".receiptBox a",
           "engine": "request"
+        },
+        {
+          "name": "nojima",
+          "url": "https://online.nojima.co.jp/commodity/1/4902370543278/",
+          "query": ".hassoumeyasu2",
+          "engine": "request"
         }
       ]
     }
