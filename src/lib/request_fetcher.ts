@@ -25,11 +25,12 @@ export class RequestFetcher implements FetcherEngine {
     query: string,
     options?: KaitaiFetcherOptions
   ): Promise<string> {
-    const requestOptions = {
+    const requestOptions: request.OptionsWithUrl = {
       url: url,
       headers: options?.headers || defaultRequestHeaders,
       encoding: null,
-      followRedirect: false
+      followRedirect: false,
+      gzip: true
     };
     return new Promise((resolve, reject) => {
       let body = "";

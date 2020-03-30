@@ -3,7 +3,7 @@ import { KaitaiFetcherOptions } from "./types";
 import { FetcherEngine } from "./fetcher_common";
 import { PuppeteerFetcher } from "./puppeteer_fetcher";
 import { RequestFetcher } from "./request_fetcher";
-import { ExecFetcher } from "./exec_fetcher";
+import { CurlFetcher } from "./curl_fetcher";
 
 export class Fetcher {
   fetchers: { [key: string]: FetcherEngine };
@@ -15,7 +15,7 @@ export class Fetcher {
   async setup() {
     this.fetchers["puppeteer"] = await PuppeteerFetcher.create();
     this.fetchers["request"] = await RequestFetcher.create();
-    this.fetchers["exec"] = await ExecFetcher.create();
+    this.fetchers["curl"] = await CurlFetcher.create();
   }
 
   async fetchArea(
