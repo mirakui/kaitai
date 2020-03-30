@@ -32,6 +32,12 @@
           "query": ".btnStrongest input:submit",
           "engine": "request",
           "allowStatusCodes": [200, 404]
+        },
+        {
+          "name": "edion",
+          "url": "https://www.edion.com/detail.html?p_cd=00062252591",
+          "query": ".receiptBox a",
+          "engine": "request"
         }
       ]
     }
