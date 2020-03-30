@@ -1,23 +1,14 @@
 import request from "request";
-import cheerio from "cheerio";
 import iconv from "iconv-lite";
 import { defaultRequestHeaders, FetcherEngine } from "./fetcher_common";
 import { KaitaiFetcherOptions } from "./types";
+import { KaitaiUtil } from "./util";
 
 export class RequestFetcher implements FetcherEngine {
   constructor() {}
 
   static async create(): Promise<RequestFetcher> {
     return new RequestFetcher();
-  }
-
-  private static execQuery(body: string, query: string) {
-    const $ = cheerio.load(body);
-    const nodes = $(query);
-    if (nodes.length == 0) {
-      throw new Error(`No matches: ${query}`);
-    }
-    return nodes.text().trim();
   }
 
   async fetchArea(
@@ -32,18 +23,20 @@ export class RequestFetcher implements FetcherEngine {
       followRedirect: false,
       gzip: true
     };
+    const allowStatusCodes = options?.allowStatusCodes || [200];
+
     return new Promise((resolve, reject) => {
       let body = "";
       request(requestOptions, (error, response, rawBody) => {
         if (error) {
           reject(error);
           return;
-        } else if (response.statusCode != 200) {
+        } else if (allowStatusCodes.indexOf(response.statusCode) < 0) {
           reject(new Error(`Status code: ${response.statusCode}`));
           return;
         }
         try {
-          resolve(RequestFetcher.execQuery(body, query));
+          resolve(KaitaiUtil.execQuery(body, query));
         } catch (execQueryError) {
           reject(execQueryError);
         }

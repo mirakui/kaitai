@@ -25,6 +25,13 @@
           "query": "td.bcs_stock",
           "engine": "request",
           "encoding": "Shift_JIS"
+        },
+        {
+          "name": "7net",
+          "url": "https://7net.omni7.jp/detail/2110613865",
+          "query": ".btnStrongest input:submit",
+          "engine": "request",
+          "allowStatusCodes": [200, 404]
         }
       ]
     }

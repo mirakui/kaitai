@@ -10,6 +10,7 @@ export type KaitaiConfig = {
       engine?: KaitaiFetcherEngineName;
       encoding?: string;
       headers?: request.Headers;
+      allowStatusCodes?: number[];
     }[];
   }[];
 };
@@ -51,4 +52,5 @@ export type KaitaiFetcherOptions = {
   engine?: KaitaiFetcherEngineName;
   encoding?: string;
   headers?: request.Headers;
+  allowStatusCodes?: number[];
 };

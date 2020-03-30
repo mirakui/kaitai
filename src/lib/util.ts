@@ -1,3 +1,5 @@
+import cheerio from "cheerio";
+
 type RetryOptions = {
   intervals?: number[];
   message?: string;
@@ -50,5 +52,17 @@ export class KaitaiUtil {
           }
         });
     });
+  }
+  static execQuery(body: string, query: string) {
+    const $ = cheerio.load(body);
+    const nodes = $(query);
+    if (nodes.length == 0) {
+      throw new Error(`No matches: ${query}`);
+    }
+    if (nodes[0].name == "input") {
+      return nodes[0].attribs["value"];
+    } else {
+      return nodes.text().trim();
+    }
   }
 }
